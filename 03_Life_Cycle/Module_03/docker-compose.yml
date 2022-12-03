@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mysql
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - "9977:3306"

@@ -1,0 +1,109 @@
+{
+	"info": {
+		"_postman_id": "6a7311a7-788f-4ac2-a504-e6256a9c68ab",
+		"name": "Job search collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17944782"
+	},
+	"item": [
+		{
+			"name": "Java",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}?description=Java&location={{MoscowCity}}, {{NewYorkCity}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"query": [
+						{
+							"key": "description",
+							"value": "Java"
+						},
+						{
+							"key": "location",
+							"value": "{{MoscowCity}}, {{NewYorkCity}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Python",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}?description=Python&location={{MoscowCity}}, {{NewYorkCity}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"query": [
+						{
+							"key": "description",
+							"value": "Python"
+						},
+						{
+							"key": "location",
+							"value": "{{MoscowCity}}, {{NewYorkCity}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ruby",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}?description=Ruby&location={{MoscowCity}}, {{NewYorkCity}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"query": [
+						{
+							"key": "description",
+							"value": "Ruby"
+						},
+						{
+							"key": "location",
+							"value": "{{MoscowCity}}, {{NewYorkCity}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://raw.githubusercontent.com/skillbox-java/JavaEE/main/positions.json",
+			"type": "string"
+		}
+	]
+}
