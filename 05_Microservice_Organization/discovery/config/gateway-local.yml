@@ -1,6 +1,16 @@
 spring:
   application:
     name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: test_rewrite_path
+          uri: "lb://order-service"
+          predicates:
+            - Path=/skillbox/api/order/**
+          filters:
+            - RewritePath=/skillbox(?<segment>/?.*), $\{segment}
+
 management:
   endpoints:
     web:

@@ -5,3 +5,16 @@ spring:
     name: order-service
   profiles:
     active: local
+  cloud:
+    config:
+      enabled: true
+      discovery:
+        enabled: true
+        service-id: discovery
+      fail-fast: true
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
