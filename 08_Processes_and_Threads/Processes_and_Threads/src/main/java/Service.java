@@ -7,7 +7,7 @@ public class Service {
     private Integer count = 0;
     private final LinkedList<String> log = new LinkedList<>();
 
-    public void log() {
+    public synchronized void log() {
         count = count + 1;
         String threadName = Thread.currentThread().getName();
         log.addLast(threadName);
