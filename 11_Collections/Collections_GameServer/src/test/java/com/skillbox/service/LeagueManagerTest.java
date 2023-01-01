@@ -9,10 +9,10 @@ import org.junit.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 public class LeagueManagerTest {
     private LeagueManager leagueManager;
@@ -56,14 +56,50 @@ public class LeagueManagerTest {
 
     @Test
     public void testGetAllPlayers() {
+        Player player = new Player("Kirill", 1);
+        Player player2 = new Player("Vlad", 2);
+        Player player3 = new Player("KirillS", 3);
+        Player[] testPlayers = new Player[3];
+        testPlayers[0] = player;
+        testPlayers[1] = player2;
+        testPlayers[2] = player3;
+        List<Player> testPlayersList = Arrays.asList(testPlayers);
+
+        leagueManager.addPlayer(player);
+        leagueManager.addPlayer(player2);
+        leagueManager.addPlayer(player3);
+        List<Player> playersList = Arrays.asList(leagueManager.getAllPlayers());
+        assertTrue(testPlayersList.containsAll(playersList));
     }
 
     @Test
     public void testGetPlayersByRace() {
+        Player playerElf = new Player("Kirill", 1, League.BRONZE, Race.ELF);
+        Player playerHuman = new Player("testName", 1, League.GOLD, Race.HUMAN);
+
+        leagueManager.addPlayer(playerElf);
+        leagueManager.addPlayer(playerHuman);
+
+        List<Player> testPlayerElfList = List.of(playerElf);
+        List<Player> playerElfList = Arrays.asList(leagueManager.getPlayers(Race.ELF));
+        assertEquals(2, leagueManager.getAllPlayers().length);
+        assertTrue(playerElfList.size() == 1 && testPlayerElfList.containsAll(playerElfList));
     }
 
     @Test
     public void testGetPlayersByLeague() {
+        Player playerTest1 = new Player("Kirill", 1, League.BRONZE, Race.ELF);
+        Player playerTest2 = new Player("testName", 1, League.GOLD, Race.ELF);
+        Player playerTest3 = new Player("Evgen", 1, League.GOLD, Race.HUMAN);
+
+        leagueManager.addPlayer(playerTest1);
+        leagueManager.addPlayer(playerTest2);
+        leagueManager.addPlayer(playerTest3);
+
+        List<Player> testPlayerElfList = List.of(playerTest2, playerTest3);
+        List<Player> playerElfList = Arrays.asList(leagueManager.getPlayers(League.GOLD));
+        assertEquals(3, leagueManager.getAllPlayers().length);
+        assertTrue(playerElfList.size() == 2 && testPlayerElfList.containsAll(playerElfList));
     }
 
     @Test
