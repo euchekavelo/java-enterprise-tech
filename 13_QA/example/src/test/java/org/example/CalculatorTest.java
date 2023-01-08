@@ -1,8 +1,14 @@
 package org.example;
 
+import org.example.annotation.After;
+import org.example.annotation.Before;
+import org.example.annotation.Test;
+import org.example.exception.AssertionException;
+
 public class CalculatorTest {
+
     @Test
-    public void testSumSuccess() {
+    public void testSumSuccess() throws AssertionException {
         Calculator calculator = new Calculator(1, 2);
         int result = calculator.sum();
         System.out.println(result);
@@ -11,7 +17,7 @@ public class CalculatorTest {
     }
 
     @Test
-    public void testSumFailed() {
+    public void testSumFailed() throws AssertionException {
         Calculator calculator = new Calculator(1, 2);
         int result = calculator.sum();
         System.out.println(result);
