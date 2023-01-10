@@ -1,0 +1,17 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: gateway
+  profiles:
+    active: local
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        service-id: discovery
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8888/eureka/
