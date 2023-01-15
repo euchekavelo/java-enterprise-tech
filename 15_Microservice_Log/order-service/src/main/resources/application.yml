@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: order-service
@@ -19,6 +22,9 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     topic: order
+  zipkin:
+    base-url: http://localhost:9311/
+
 management:
   endpoints:
     web:
