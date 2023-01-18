@@ -1,10 +1,11 @@
 version: '3'
+
 services:
   psql:
     image: postgres:latest
     container_name: server_psql
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: on-failure
     environment:
       POSTGRES_USER: order_user
@@ -14,12 +15,14 @@ services:
       - database-data:/var/lib/postgresql/data/
 
   zookeeper:
+    container_name: zookeeper
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
     restart: on-failure
 
   kafka:
+    container_name: kafka
     image: wurstmeister/kafka
     ports:
       - "9092:9092"
@@ -30,6 +33,35 @@ services:
     volumes:
       - kafka:/data
     restart: on-failure
+
+  message-server:
+    container_name: order-service
+    image: order-service:latest
+    build: './order-service'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://server_psql:5432/order_db
+    ports:
+      - "8080:8080"
+
+  grafana:
+    build: 'monitoring-storage/config/grafana'
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring-storage/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring-storage/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring-storage/prometheus:/prometheus
 
 volumes:
   database-data:

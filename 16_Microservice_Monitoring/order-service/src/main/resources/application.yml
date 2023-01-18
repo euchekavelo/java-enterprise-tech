@@ -17,13 +17,20 @@ spring:
       ddl-auto: create-drop
     show-sql: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
     topic: order
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
   endpoint:
     shutdown:
       enabled: true
