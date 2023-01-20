@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
+    <title>Picture gallery</title>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">Picture gallery</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="d-grid gap-2 col-4 mx-auto">
+                <button type="button" class="btn btn-primary"
+                        data-bs-toggle="modal" data-bs-target="#pictureUploadModal">Upload</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row py-2">
+
+        <div class="alert alert-danger col-md-12 col-xs-12" role="alert"
+             th:if="${errorMessage}" th:text="${errorMessage}">
+            Error message
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                <div class="col" th:each="pic : ${pictures}">
+                    <div class="card">
+                        <img class="card-img-top" th:src="@{/{id}(id = ${pic.id})}" alt="Gallery picture">
+                        <div class="card-body">
+                            <p class="card-text" th:text="${pic.description}">Picture description</p>
+                            <form class="inline" th:action="@{/{id}(id = ${pic.id})}" th:method="DELETE">
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="pictureUploadModal" tabindex="-1" aria-labelledby="pictureUploadLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pictureUploadLabel">Upload new picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="picture-upload-form" enctype="multipart/form-data"
+                      th:method="POST" th:action="@{/upload}">
+
+                    <div class="mb-3">
+                        <label for="picture-file" class="col-form-label">Picture file</label>
+                        <input type="file" class="form-control" id="picture-file" name="pictureFile"
+                               accept="image/png, image/gif, image/jpeg" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="picture-description" class="col-form-label">Picture description</label>
+                        <textarea class="form-control" id="picture-description" name="pictureDescription"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="picture-upload-form" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+</html>
