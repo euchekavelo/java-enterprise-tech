@@ -3,8 +3,11 @@ package com.example.controller;
 import com.example.service.PictureDataDto;
 import com.example.service.PictureService;
 import com.example.service.SavedPictureDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +20,15 @@ import java.io.InputStream;
 @Controller
 public class GalleryController {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(GalleryController.class);
+    private final PictureService pictureService;
+    private final KafkaTemplate<String, SavedPictureDto> kafkaTemplate;
+
     @Autowired
-    private PictureService pictureService;
+    public GalleryController(PictureService pictureService, KafkaTemplate<String, SavedPictureDto> kafkaTemplate) {
+        this.pictureService = pictureService;
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @GetMapping("/")
     public String indexPage(Model model) {
@@ -33,9 +43,9 @@ public class GalleryController {
                 file.getContentType(),
                 uploadPictureDto.getPictureDescription(),
                 file.getInputStream());
-        // TODO здесь вам нужно вместо вызова метода обработки
-        // TODO отправить сообщение о том, что картинка загружена и нуждается в обработке
-        pictureService.processPicture(savedPictureDto);
+
+        kafkaTemplate.send("first.kafka.topic", savedPictureDto);
+        LOGGER.info("Картинка загружена и передана в очередь для ассинхронной обработки.");
         return "redirect:/";
     }
 
@@ -50,7 +60,7 @@ public class GalleryController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")
     public String removePicture(@PathVariable long id) {
         pictureService.remove(id);
         return "redirect:/";
