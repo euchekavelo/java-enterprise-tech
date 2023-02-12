@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: discovery
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: file:./config/
+
+
+eureka:
+  dashboard:
+    path: /dashboard/
+    enabled: true
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: http://localhost:8888/eureka/
+server:
+  port: 8888
