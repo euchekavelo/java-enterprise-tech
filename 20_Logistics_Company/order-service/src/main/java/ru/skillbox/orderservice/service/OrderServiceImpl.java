@@ -1,14 +1,14 @@
 package ru.skillbox.orderservice.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.skillbox.orderservice.controller.OrderNotFoundException;
 import ru.skillbox.orderservice.domain.*;
 import ru.skillbox.orderservice.domain.dto.OrderDto;
-import ru.skillbox.orderservice.domain.dto.OrderKafkaDto;
-import ru.skillbox.orderservice.domain.dto.StatusDto;
+import ru.skillbox.orderservice.domain.dto.SuccessfulResponse;
+import ru.skillbox.orderservice.exception.NotFoundProductException;
+import ru.skillbox.orderservice.processor.OrderProcessor;
 import ru.skillbox.orderservice.repository.OrderRepository;
+import ru.skillbox.orderservice.repository.ProductRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -16,46 +16,56 @@ import java.util.Optional;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
-
+    private final OrderProcessor orderProcessor;
+    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final KafkaService kafkaService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, KafkaService kafkaService) {
+    @Autowired
+    public OrderServiceImpl(OrderRepository orderRepository, OrderProcessor orderProcessor,
+                            ProductRepository productRepository) {
+
         this.orderRepository = orderRepository;
-        this.kafkaService = kafkaService;
+        this.orderProcessor = orderProcessor;
+        this.productRepository = productRepository;
     }
 
     @Override
-    public Optional<Order> addOrder(OrderDto orderDto) {
-
+    public SuccessfulResponse addOrder(OrderDto orderDto) throws NotFoundProductException {
         LocalDateTime dateTime = LocalDateTime.now();
-        Order newOrder = new Order(
-                orderDto.getDepartureAddress(),
-                orderDto.getDestinationAddress(),
-                orderDto.getDescription(),
-                orderDto.getCost(),
-                dateTime,
-                dateTime,
-                OrderStatus.await
-        );
+        Optional<Product> optionalProduct = productRepository.findById(orderDto.getProductId());
+        if (optionalProduct.isEmpty()) {
+            throw new NotFoundProductException("Не найден продукт с таким идентификатором в базе данных.");
+        }
+
+        Order newOrder = new Order();
+        newOrder.setProductId(orderDto.getProductId());
+        newOrder.setUserId(orderDto.getUserId());
+        newOrder.setStatus(OrderStatus.CREATED);
+        newOrder.setPrice(optionalProduct.get().getPrice());
+        newOrder.setModifiedTime(dateTime);
+        newOrder.setCreationTime(dateTime);
         Order order = orderRepository.save(newOrder);
-        kafkaService.produce(OrderKafkaDto.toKafkaDto(order));
-        return Optional.of(order);
+        orderProcessor.process(order);
+
+        return getSuccessfulResponse();
     }
 
     @Override
-    public Boolean updateOrderStatus(Long id, StatusDto statusDto) {
-        try {
-            Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-            order.setStatus(statusDto.getStatus());
-            Order resultOrder = orderRepository.save(order);
-            kafkaService.produce(OrderKafkaDto.toKafkaDto(resultOrder));
-            return true;
-        } catch (RuntimeException e) {
-            logger.error(String.format("Update status failed: %s", e.getMessage()));
-            return false;
+    public void updateOrderStatus(Integer orderId, OrderStatus orderStatus) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus(orderStatus);
+            order.setModifiedTime(LocalDateTime.now());
+            orderRepository.save(order);
         }
     }
 
+    private SuccessfulResponse getSuccessfulResponse() {
+        SuccessfulResponse successfulResponse = new SuccessfulResponse();
+        successfulResponse.setMessage("Запрос на обработку заказа успешно запущен!");
+        successfulResponse.setResult(true);
+
+        return successfulResponse;
+    }
 }

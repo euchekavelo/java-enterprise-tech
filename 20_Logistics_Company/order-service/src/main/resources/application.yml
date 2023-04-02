@@ -1,4 +1,13 @@
 spring:
+  cloud:
+    stream:
+      function:
+        definition: orderCreatedEventPublisher;transactionEventRecipient
+      bindings:
+        orderCreatedEventPublisher-out-0:
+          destination: orders
+        transactionEventRecipient-in-0:
+          destination: transactions
   application:
     name: order-service
   datasource:
@@ -6,6 +15,8 @@ spring:
     username: order_user
     password: order_password
     driver-class-name: org.postgresql.Driver
+    data: classpath:data.sql
+    initialization-mode: always
   jpa:
     properties:
       hibernate:
@@ -16,9 +27,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-  kafka:
-    bootstrap-servers: localhost:9092
-    topic: order
 management:
   endpoints:
     web:

@@ -9,25 +9,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "order_db")
+@Table(name = "orders")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "description")
-    private String description;
+    private Integer userId;
 
-    @Column(name = "departure_address")
-    private String departureAddress;
+    private Integer productId;
 
-    @Column(name = "destination_address")
-    private String destinationAddress;
-
-    @Column(name = "cost")
-    private Long cost;
+    private double price;
 
     @Column(name = "creation_time")
     private LocalDateTime creationTime;
@@ -38,22 +32,4 @@ public class Order {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
-    public Order(
-            String departureAddress,
-            String destinationAddress,
-            String description,
-            Long cost,
-            LocalDateTime enterTime,
-            LocalDateTime modifiedTime,
-            OrderStatus status
-    ) {
-        this.departureAddress = departureAddress;
-        this.destinationAddress = destinationAddress;
-        this.description = description;
-        this.cost = cost;
-        this.creationTime = enterTime;
-        this.modifiedTime = modifiedTime;
-        this.status = status;
-    }
 }

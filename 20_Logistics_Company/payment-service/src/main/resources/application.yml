@@ -2,15 +2,15 @@ spring:
   cloud:
     stream:
       function:
-        definition: orderEventProcessor;paymentEventSubscriber
+        definition: orderCreatedEventProcessor;paymentEventProcessor
       bindings:
-        orderEventProcessor-in-0:
+        orderCreatedEventProcessor-in-0:
           destination: orders
-        orderEventProcessor-out-0:
+        orderCreatedEventProcessor-out-0:
           destination: payments
-        paymentEventSubscriber-in-0:
+        paymentEventProcessor-in-0:
           destination: payments
-        paymentEventSubscriber-out-0:
+        paymentEventProcessor-out-0:
           destination: transactions
   application:
     name: order-service
@@ -19,6 +19,8 @@ spring:
     username: order_user
     password: order_password
     driver-class-name: org.postgresql.Driver
+    data: classpath:data.sql
+    initialization-mode: always
   jpa:
     properties:
       hibernate:
@@ -29,9 +31,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-  kafka:
-    bootstrap-servers: localhost:9092
-    topic: order
 management:
   endpoints:
     web:
@@ -45,3 +44,5 @@ management:
     metrics:
       enabled: true
 
+server:
+  port: 8881
